@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  cake_web:
+    image: nginx:latest
+    ports:
+        - "8090:80"
+    volumes:
+        - ./cakephp_web:/var/www/html/cakephp_web
+        - ./site.conf:/etc/nginx/conf.d/site.conf
+    links:
+        - cake_php
+  cake_php:
+    build: .
+    platform: linux/amd64
+    volumes:
+      - ./cakephp_web:/var/www/html/cakephp_web
+      - ./cakephp_web/logs:/var/log/php-fpm
+  cake_sqldb:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: always
+    ports:
+      - 1433:1433
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "strongpassword"
